@@ -1,42 +1,72 @@
-var MOVE_LEFT = new Buffer('1b5b3130303044', 'hex').toString();
-var MOVE_UP = new Buffer('1b5b3141', 'hex').toString();
-var CLEAR_LINE = new Buffer('1b5b304b', 'hex').toString();
-var stringWidth = require('string-width');
+const stringWidth = require('string-width').default;
 
+const MOVE_LEFT = '\u001b[1000D';   // Move cursor to start of line
+const MOVE_UP = '\u001b[1A';        // Move cursor up one line
+const CLEAR_LINE = '\u001b[0K';     // Clear line from cursor to end
+const CLEAR_CURRENT = MOVE_LEFT + CLEAR_LINE;
+
+/**
+ * Creates a logger that overwrites previous output.
+ *
+ * @param {import('tty').WriteStream} stream The output stream (stdout or stderr)
+ */
 module.exports = function(stream) {
-	var write = stream.write;
-	var str;
+	if (!stream || typeof stream.write !== 'function') {
+		throw new TypeError('Expected a writable stream');
+	}
+
+	const write = stream.write;
+	/** @var {string|null} */
+	let str;
 
 	stream.write = function(data) {
-		if (str && data !== str) str = null;
+		if (str && data !== str) {
+			str = null;
+		}
+
 		return write.apply(this, arguments);
 	};
 
 	if (stream === process.stderr || stream === process.stdout) {
 		process.on('exit', function() {
-			if (str !== null) stream.write('');
+			if (str !== null) {
+				stream.write('');
+			}
 		});
 	}
 
-	var prevLineCount = 0;
-	var log = function() {
-		str = '';
-		var nextStr = Array.prototype.join.call(arguments, ' ');
+	let prevLineCount = 0;
 
-		// Clear screen
-		for (var i=0; i<prevLineCount; i++) {
-			str += MOVE_LEFT + CLEAR_LINE + (i < prevLineCount-1 ? MOVE_UP : '');
+	/**
+	 * Log function that overwrites previous output.
+	 *
+	 * @param {...unknown[]} args Arguments to log
+	 */
+	const log = function(...args) {
+		str = '';
+		const nextStr = args.join(' ');
+
+		if (stream.isTTY) {
+			// Clear screen
+			for (let i = 0; i < prevLineCount; ++i) {
+				str += CLEAR_CURRENT + (i < prevLineCount - 1 ? MOVE_UP : '');
+			}
 		}
 
-		// Actual log output
 		str += nextStr;
 		stream.write(str);
 
-		// How many lines to remove on next clear screen
-		var prevLines = nextStr.split('\n');
-		prevLineCount = 0;
-		for (var i=0; i < prevLines.length; i++) {
-			prevLineCount += Math.ceil(stringWidth(prevLines[i]) / stream.columns) || 1;
+		if (stream.isTTY && stream.columns) {
+			const prevLines = nextStr.split('\n');
+			const { columns } = stream;
+			prevLineCount = 0;
+			let i = prevLines.length;
+			while (i--) {
+				const lineWidth = stringWidth(prevLines[i]);
+				prevLineCount += Math.max(1, Math.ceil(lineWidth / columns));
+			}
+		} else {
+			prevLineCount = nextStr.split('\n').length;
 		}
 	};
 
