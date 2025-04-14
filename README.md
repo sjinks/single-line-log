@@ -2,23 +2,23 @@
 
 Node.js module that keeps writing to the same line in the console (or a stream). Very useful when you write progress bars, or a status message during longer operations. Supports multilines.
 
-
 ## Installation
 
-	npm install single-line-log
-
+```sh
+npm install @wwa/single-line-log
+```
 
 ## Usage
 
 ``` js
-var log = require('single-line-log').stdout;
+const log = require('@wwa/single-line-log').stdout;
 // or pass any stream:
-// var log = require('single-line-log')(process.stdout);
+// const log = require('single-line-log')(process.stdout);
 
-var read = 0;
-var size = fs.statSync('super-large-file').size;
+let read = 0;
+const size = fs.statSync('super-large-file').size;
 
-var rs = fs.createReadStream('super-large-file');
+const rs = fs.createReadStream('super-large-file');
 rs.on('data', function(data) {
 	read += data.length;
 	var percentage = Math.floor(100*read/size);
@@ -40,16 +40,13 @@ log.clear();
 log('Line 2');
 ```
 
-
 ## .stdout
 
 Outputs to `process.stdout`.
 
-
 ## .stderr
 
 Outputs to `process.stderr`.
-
 
 ## License
 
