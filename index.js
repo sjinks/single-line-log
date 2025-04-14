@@ -59,6 +59,7 @@ module.exports = function(stream) {
 		if (stream.isTTY && stream.columns) {
 			const prevLines = nextStr.split('\n');
 			const { columns } = stream;
+			prevLineCount = 0;
 			let i = prevLines.length;
 			while (i--) {
 				const lineWidth = stringWidth(prevLines[i]);
