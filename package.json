@@ -15,6 +15,7 @@
     "shell"
   ],
   "version": "1.1.2",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/sjinks/single-line-log.git"
@@ -27,6 +28,10 @@
   "scripts": {
     "test": "node test.js"
   },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true
