@@ -23,7 +23,7 @@
   "license": "MIT",
   "author": "Tobias Baunbæk <freeall@gmail.com>",
   "dependencies": {
-    "string-width": "^4.2.2"
+    "string-width": "^8.0.0"
   },
   "scripts": {
     "test": "node test.js"
