@@ -22,6 +22,10 @@ setInterval(function() {
         s += '\nline 4 - ' + Math.random();
     }
 
+    if (i < 10) {
+        s += '\nline 5 - Long line - ' + '*'.repeat(process.stdout.columns) + ' - ' + Math.random();
+    }
+
     log(s);
 
     if (i === 50) {

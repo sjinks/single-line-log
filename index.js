@@ -1,9 +1,8 @@
 const stringWidth = require('string-width').default;
 
-const MOVE_LEFT = '\u001b[1000D';   // Move cursor to start of line
 const MOVE_UP = '\u001b[1A';        // Move cursor up one line
 const CLEAR_LINE = '\u001b[0K';     // Clear line from cursor to end
-const CLEAR_CURRENT = MOVE_LEFT + CLEAR_LINE;
+const CLEAR_CURRENT = '\r' + CLEAR_LINE;
 
 /**
  * Creates a logger that overwrites previous output.
