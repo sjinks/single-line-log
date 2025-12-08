@@ -4,6 +4,8 @@ const MOVE_UP = '\u001b[1A';        // Move cursor up one line
 const CLEAR_LINE = '\u001b[0K';     // Clear line from cursor to end
 const CLEAR_CURRENT = '\r' + CLEAR_LINE;
 
+const isAppleTerminal = process.env.TERM_PROGRAM === 'Apple_Terminal';
+
 /**
  * Creates a logger that overwrites previous output.
  *
@@ -70,7 +72,7 @@ module.exports = function(stream) {
 	};
 
 	log.clear = function() {
-		stream.write('');
+		stream.write(isAppleTerminal ? '\n' : '');
 	};
 
 	return log;
